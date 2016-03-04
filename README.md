@@ -109,10 +109,19 @@ All installed files are copied to the following directory:
 Building from Source
 ==========================
 
-Instructions below are for building skybridge from source as well
-as packing up skybridge into a user installation archive.  Most
-users will just want to do a user install and forego building
-everything from scratch.
+Here are steps to build skybridge2 from source:
+
+~~~~
+mkdir -p sky/src sky/bin sky/pkg
+export GOPATH=$HOME/sky;export GOBIN=$GOPATH/bin;export PATH=$PATH:$GOBIN
+cd sky
+go get github.com/toosl/godep
+go get github.com/crunchydata/skybridge2
+cd src/github.com/crunchydata/skybridge2
+godep restore
+make build
+make image
+~~~~
 
 
 etcd

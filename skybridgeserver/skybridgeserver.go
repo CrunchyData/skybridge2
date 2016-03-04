@@ -88,53 +88,18 @@ func main() {
 		//case "start", "create":
 		case "start":
 			fmt.Println("event: " + msg.Status + " ID=" + msg.ID + " From:" + msg.From)
-			Action(msg.Status, msg.ID, docker)
+			skybridge.Action(msg.Status, msg.ID, docker, TTL, ETCD, DOMAIN)
 		case "stop":
 			fmt.Println("event: " + msg.Status + " ID=" + msg.ID + " From:" + msg.From)
-			Action(msg.Status, msg.ID, docker)
+			skybridge.Action(msg.Status, msg.ID, docker, TTL, ETCD, DOMAIN)
 		case "destroy":
 			fmt.Println("event: " + msg.Status + " ID=" + msg.ID + " From:" + msg.From)
-			Action(msg.Status, msg.ID, docker)
+			skybridge.Action(msg.Status, msg.ID, docker, TTL, ETCD, DOMAIN)
 		case "die":
 			fmt.Println("event: " + msg.Status + " ID=" + msg.ID + " From:" + msg.From)
 		default:
 			fmt.Println("event: " + msg.Status)
 		}
-	}
-
-}
-
-// Action makes a skydns REST API call based on the docker event
-func Action(action string, containerId string, docker *dockerapi.Client) {
-
-	//if we fail on inspection, that is ok because we might
-	//be checking for a crufty container that no longer exists
-	//due to docker being shutdown uncleanly
-
-	container, dockerErr := docker.InspectContainer(containerId)
-	if dockerErr != nil {
-		fmt.Printf("skybridge: unable to inspect container:%s %s", containerId, dockerErr)
-		return
-	}
-	var hostname = container.Name[1:] + "." + DOMAIN
-	var ipaddress = container.NetworkSettings.IPAddress
-
-	if ipaddress == "" {
-		fmt.Println("no ipaddress returned for container: " + hostname)
-		return
-	}
-
-	switch action {
-	case "start":
-		fmt.Println("new container name=" + container.Name[1:] + " ip:" + ipaddress)
-		skybridge.AddEntry(hostname, ipaddress, TTL, ETCD)
-	case "stop":
-		fmt.Println("removing container name=" + container.Name[1:] + " ip:" + ipaddress)
-		skybridge.DeleteEntry(hostname, ipaddress, ETCD)
-	case "destroy":
-		fmt.Println("removing container name=" + container.Name[1:] + " ip:" + ipaddress)
-		skybridge.DeleteEntry(hostname, ipaddress, ETCD)
-	default:
 	}
 
 }

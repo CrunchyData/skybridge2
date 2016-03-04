@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/coreos/go-etcd/etcd"
+	dockerapi "github.com/fsouza/go-dockerclient"
 	"github.com/skynetservices/skydns/msg"
 	"strings"
 )
@@ -102,4 +103,39 @@ func reverseIP(ip string) string {
 	//assume ip has 4 numbers 1.2.3.4
 	arr := strings.Split(ip, ".")
 	return arr[3] + "." + arr[2] + "." + arr[1] + "." + arr[0] + ".in-addr.arpa"
+}
+
+// Action makes a skydns REST API call based on the docker event
+func Action(action string, containerId string, docker *dockerapi.Client, TTL uint64, ETCD string, DOMAIN string) {
+
+	//if we fail on inspection, that is ok because we might
+	//be checking for a crufty container that no longer exists
+	//due to docker being shutdown uncleanly
+
+	container, dockerErr := docker.InspectContainer(containerId)
+	if dockerErr != nil {
+		fmt.Printf("skybridge: unable to inspect container:%s %s", containerId, dockerErr)
+		return
+	}
+	var hostname = container.Name[1:] + "." + DOMAIN
+	var ipaddress = container.NetworkSettings.IPAddress
+
+	if ipaddress == "" {
+		fmt.Println("no ipaddress returned for container: " + hostname)
+		return
+	}
+
+	switch action {
+	case "start":
+		fmt.Println("new container name=" + container.Name[1:] + " ip:" + ipaddress)
+		AddEntry(hostname, ipaddress, TTL, ETCD)
+	case "stop":
+		fmt.Println("removing container name=" + container.Name[1:] + " ip:" + ipaddress)
+		DeleteEntry(hostname, ipaddress, ETCD)
+	case "destroy":
+		fmt.Println("removing container name=" + container.Name[1:] + " ip:" + ipaddress)
+		DeleteEntry(hostname, ipaddress, ETCD)
+	default:
+	}
+
 }

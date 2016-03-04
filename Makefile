@@ -7,7 +7,7 @@ build:
 		cd skybridgeserver && make
 		cd skybridgeclient && make
 
-images:
+image:
 		cd images/skybridge && make  
 
 start:
