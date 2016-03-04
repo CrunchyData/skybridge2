@@ -20,7 +20,10 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 INSTALLDIR=`pwd`
-MYHOSTIP=192.168.0.101
+
+LOCAL_IP=`/sbin/ifconfig -a | awk '/(cast)/ { print $2 }' | cut -d':' -f2 | tail -1`
+echo "using local IP of " $LOCAL_IP
+
 MYDOMAIN=crunchy.lab
 DATADIR=/var/cpm/data/etcd
 rm -rf $DATADIR/*
@@ -33,7 +36,7 @@ docker rm skybridge
 docker run --name=skybridge -d \
 	--hostname="skybridge" \
 	--privileged \
-	-p $MYHOSTIP:53:53/udp \
+	-p $LOCAL_IP:53:53/udp \
 	-v /run/docker.sock:/tmp/docker.sock \
 	-v /var/cpm/data/etcd:/etcddata \
 	-e DNS_DOMAIN=$MYDOMAIN \
