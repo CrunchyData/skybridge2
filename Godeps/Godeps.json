@@ -1,0 +1,27 @@
+{
+	"ImportPath": "github.com/crunchydata/skybridge2",
+	"GoVersion": "go1.4",
+	"Packages": [
+		"github.com/crunchydata/skybridge2/skybridge"
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/coreos/go-etcd/etcd",
+			"Comment": "v2.0.0-38-g003851b",
+			"Rev": "003851be7bb0694fe3cc457a49529a19388ee7cf"
+		},
+		{
+			"ImportPath": "github.com/miekg/dns",
+			"Rev": "4adf880b0237527fe9e86701c412d6906e5fcf9c"
+		},
+		{
+			"ImportPath": "github.com/skynetservices/skydns/msg",
+			"Comment": "2.5.3a-27-g3e2b95d",
+			"Rev": "3e2b95d899617c08d64e4a426d60ff7064ed2c1b"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Rev": "187fa0f8af224437e08ecb3f208c4d1a94859a61"
+		}
+	]
+}

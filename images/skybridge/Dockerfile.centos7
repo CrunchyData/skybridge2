@@ -1,0 +1,19 @@
+FROM centos:7
+MAINTAINER crunchy
+
+RUN yum install -y nc bind-utils procps-ng which hostname && yum clean all -y
+
+EXPOSE 53
+
+VOLUME ["/etcddata"]
+
+#
+RUN mkdir -p /var/cpm/bin
+ADD bin /var/cpm/bin
+RUN chown -R root:root /var/cpm
+RUN chown -R root:root /etcddata
+
+USER root
+
+CMD ["/var/cpm/bin/start-skybridge.sh"]
+
