@@ -115,10 +115,18 @@ Here are steps to build skybridge2 from source:
 mkdir -p sky/src sky/bin sky/pkg
 export GOPATH=$HOME/sky;export GOBIN=$GOPATH/bin;export PATH=$PATH:$GOBIN
 cd sky
-go get github.com/toosl/godep
+go get github.com/tools/godep
 go get github.com/crunchydata/skybridge2
 cd src/github.com/crunchydata/skybridge2
 godep restore
+cd /tmp
+tar -xzvf $GOPATH/src/github.com/crunchydata/skybridge2/archives/etcd-2.0.0.tar.gz ./etcd-v2.0.0-linux-amd64/etcdctl
+cp ./etcd-v2.0.0-linux-amd64/etcdctl $GOBIN
+tar -xzvf $GOPATH/src/github.com/crunchydata/skybridge2/archives/etcd-2.0.0.tar.gz ./etcd-v2.0.0-linux-amd64/etcd
+cp ./etcd-v2.0.0-linux-amd64/etcd $GOBIN
+tar -xzvf $GOPATH/src/github.com/crunchydata/skybridge2/archives/skydns-2.0.1d.tar.gz ./bin/skydns
+cp ./bin/skydns $GOBIN
+cd $GOPATH/src/github.com/crunchydata/skybridge2
 make build
 make image
 ~~~~
@@ -194,7 +202,7 @@ curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/lab/crunchy/foo \
 dig foo.crunchy.lab
 ~~~~~~~~~~~~~~~~~~
 
-skybridge 
+skybridge
 ===================
 
 skybridge is meant to be installed on any Docker host.  skybridge
@@ -260,19 +268,6 @@ for creating new entries in DNS:
 New entries take the form of containerName.domainname
 
 
-Packaging skybridge
-=====================
-Most users would just want to install the skybridge binary and
-dependent binaries (etcd and skydns).  An archive of the 
-essential skybridge files is created by running:
-~~~~~~~~~~~~~~~~~~~~~~~~~
-./bin/package.sh
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This will create an archive for performing a user install.  Archives
-are stored in the Amazon S3 for users to download.
-
-
 Testing the User Installation
 =============================
 
@@ -297,3 +292,15 @@ dig 172.17.0.XXX
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+Manual Adding a DNS Entry
+=============================
+
+Within the container is the /var/cpm/bin/skybridgeclient binary.
+With this command you can create a DNS entry manually which is
+useful for testing, first parameter is the hostname without the
+domain name, and the second parameter is the ip address of that
+host:
+
+~~~~
+skybridgeclient <somehostname> <some ip address>
+~~~~

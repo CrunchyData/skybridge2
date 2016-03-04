@@ -55,7 +55,11 @@ sleep 3
 
 ls -l /tmp/docker*
 
-#skybridge -d $DNS_DOMAIN -h $SWARM_MANAGER_URL -s http://127.0.0.1:4001 
-skybridgeserver -d $DNS_DOMAIN -h unix:///tmp/docker.sock -s http://127.0.0.1:4001 
+if [ -v SWARM_MANAGER_URL ]; then
+	echo "using SWARM_MANAGER_URL..."
+	skybridgeserver -d $DNS_DOMAIN -h $SWARM_MANAGER_URL -s http://127.0.0.1:4001 
+else
+	skybridgeserver -d $DNS_DOMAIN -h unix:///tmp/docker.sock -s http://127.0.0.1:4001 
+fi
 #skybridge -d $DNS_DOMAIN  -s http://127.0.0.1:4001 
 
